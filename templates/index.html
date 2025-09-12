@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+  <section class="card">
+    <h2>Welcome</h2>
+    <p>Choose a short training game. Keep sessions short and stop when you feel tired.</p>
+    <div class="grid">
+      <a class="big-card" href="{{ url_for('quick_recall_page') }}">
+        <h3>Quick Recall</h3>
+        <p>See words, wait, and recall them in order. Calibrates short-term memory.</p>
+      </a>
+
+      <a class="big-card" href="{{ url_for('picture_match_page') }}">
+        <h3>Picture Match Story</h3>
+        <p>See a series of pictures, build a story, then reorder to practice sequencing.</p>
+      </a>
+    </div>
+  </section>
+{% endblock %}
