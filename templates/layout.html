@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ title if title else "Quick Memory" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="app-title"><a href="{{ url_for('index') }}">Quick Memory</a></h1>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="{{ url_for('quick_recall_page') }}">Quick Recall</a>
+        <a href="{{ url_for('picture_match_page') }}">Picture Match</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container" id="main">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>Gentle memory practice — simple, accessible, and calm.</small>
+    </div>
+  </footer>
+</body>
+</html>

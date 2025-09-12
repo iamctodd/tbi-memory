@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="card game">
+  <h2>Picture Match Story</h2>
+  <p class="muted">Look at the pictures. You can tap "Hear a story" to get a narrative. Then reorder the pictures in the original order.</p>
+
+  <div id="pm-area" class="game-area">
+    <div id="pm-start" class="center">
+      <label for="pm-level">Pictures:</label>
+      <select id="pm-level">
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+      </select>
+      <button id="pm-start-btn" class="primary-btn">START</button>
+    </div>
+
+    <div id="pm-showing" class="center hidden">
+      <div id="pm-row" class="pm-row"></div>
+      <div class="pm-actions">
+        <button id="pm-hear" class="secondary-btn">Hear a story</button>
+        <button id="pm-ready" class="primary-btn">I'm ready</button>
+      </div>
+    </div>
+
+    <div id="pm-reorder" class="center hidden">
+      <p>Drag to reorder the pictures (or use the move buttons)</p>
+      <div id="pm-reorder-row" class="pm-row reorderable" aria-label="Reorder pictures"></div>
+      <div id="pm-feedback" class="hidden"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="location.href='/'" class="link">Back</button>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/picture_match.js') }}"></script>
+{% endblock %}

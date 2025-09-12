@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block content %}
+<section class="card game">
+  <h2>Quick Recall</h2>
+  <p class="muted">Remember the words in order. Words are shown one at a time and read aloud (if allowed by your browser).</p>
+
+  <div id="game-area" class="game-area">
+    <div id="start-screen" class="center">
+      <label for="level-select">Words:</label>
+      <select id="level-select" aria-label="Number of words">
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+      <button id="start-button" class="primary-btn">START</button>
+    </div>
+
+    <div id="showing" class="center hidden" aria-live="polite">
+      <div id="word-box" class="word-box" aria-hidden="false"></div>
+      <button id="skip-button" class="secondary-btn">Skip</button>
+    </div>
+
+    <div id="recall" class="center hidden" aria-live="polite">
+      <div id="slots" class="slots" aria-label="Selected words"></div>
+      <div id="choices" class="choices" aria-label="Word choices"></div>
+    </div>
+
+    <div id="feedback" class="center hidden" aria-live="assertive"></div>
+  </div>
+
+  <div class="controls">
+    <button id="back-home" class="link" onclick="location.href='/'">Back</button>
+  </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/quick_recall.js') }}"></script>
+{% endblock %}
