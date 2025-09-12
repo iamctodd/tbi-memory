@@ -22,9 +22,12 @@ PICTURES = [
     {"id": "flower", "label": "Flower", "emoji": "🌼"}
 ]
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    word = None
+    if request.method == 'POST':
+        word = request.form.get('wordInput')
+    return render_template('index.html', word=word)
 
 @app.route("/quick-recall")
 def quick_recall_page():

@@ -1,18 +1,250 @@
-{% extends "layout.html" %}
-{% block content %}
-  <section class="card">
-    <h2>Welcome</h2>
-    <p>Choose a short training game. Keep sessions short and stop when you feel tired.</p>
-    <div class="grid">
-      <a class="big-card" href="{{ url_for('quick_recall_page') }}">
-        <h3>Quick Recall</h3>
-        <p>See words, wait, and recall them in order. Calibrates short-term memory.</p>
-      </a>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuraFlex</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+<div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
+<h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Memory Game</h1>
 
-      <a class="big-card" href="{{ url_for('picture_match_page') }}">
-        <h3>Picture Match Story</h3>
-        <p>See a series of pictures, build a story, then reorder to practice sequencing.</p>
-      </a>
+<!-- Game Stats -->
+<div class="flex justify-between mb-6 text-sm text-gray-600">
+  <div>Level: <span id="level" class="font-bold text-blue-600">1</span></div>
+  <div>Score: <span id="score" class="font-bold text-green-600">0</span></div>
+  <div>Lives: <span id="lives" class="font-bold text-red-600">3</span></div>
+</div>
+
+<!-- Game Area -->
+<div id="gameArea" class="space-y-4">
+  
+  <!-- Sequence Display -->
+  <div id="sequenceDisplay" class="hidden">
+    <h3 class="text-lg font-semibold mb-3 text-center">Remember this sequence:</h3>
+    <div id="sequenceWords" class="flex flex-wrap gap-2 justify-center mb-4"></div>
+    <div class="text-center">
+      <button id="startInput" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+        I'm Ready!
+      </button>
     </div>
-  </section>
-{% endblock %}
+  </div>
+
+  <!-- Input Phase -->
+  <div id="inputPhase" class="hidden space-y-4">
+    <h3 class="text-lg font-semibold mb-3 text-center">Enter the sequence:</h3>
+    <div id="inputArea">
+      <input type="text" id="wordInput" placeholder="Enter the words in order with sapces in between"
+        class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4">
+      <button id="submitSequence"
+        class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors">
+        Submit Sequence
+      </button>
+    </div>
+    <div id="userSequence" class="flex flex-wrap gap-2 justify-center"></div>
+  </div>
+
+  <!-- Start/Results Screen -->
+  <div id="startScreen" class="text-center space-y-4">
+    <p class="text-gray-600 mb-4">Test your memory! <br>Remember sequences of words and repeat them back.</p>
+    <button id="startGame" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg">
+      Start Game
+    </button>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="gameOverScreen" class="hidden text-center space-y-4">
+    <h3 class="text-xl font-bold text-red-600">Game Over!</h3>
+    <p id="finalScore" class="text-lg"></p>
+    <button id="restartGame" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors">
+      Play Again
+    </button>
+  </div>
+
+  <!-- Feedback -->
+  <div id="feedback" class="hidden p-4 rounded-lg text-center font-semibold"></div>
+</div>
+
+</div>
+
+<script>
+class MemoryGame {
+  constructor() {
+    this.level = 1;
+    this.score = 0;
+    this.lives = 3;
+    this.currentSequence = [];
+    this.userInput = [];
+    this.wordPool = ['cat', 'dog', 'tree', 'house', 'car', 'book', 'sun', 'moon', 'star', 'fish', 'bird', 'flower', 'water', 'fire', 'rock', 'wind', 'cloud', 'rain', 'snow', 'leaf'];
+    
+    this.init();
+  }
+
+  init() {
+    this.bindEvents();
+    this.updateDisplay();
+  }
+
+  bindEvents() {
+    document.getElementById('startGame').addEventListener('click', () => this.startNewGame());
+    document.getElementById('startInput').addEventListener('click', () => this.showInputPhase());
+    document.getElementById('submitSequence').addEventListener('click', () => this.checkSequence());
+    document.getElementById('restartGame').addEventListener('click', () => this.resetGame());
+    
+    document.getElementById('wordInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        this.addWordToInput();
+      }
+    });
+
+    document.getElementById('wordInput').addEventListener('input', (e) => {
+      if (e.target.value.includes(' ')) {
+        this.addWordToInput();
+      }
+    });
+  }
+
+  startNewGame() {
+    this.generateSequence();
+    this.showSequence();
+  }
+
+  generateSequence() {
+    this.currentSequence = [];
+    const sequenceLength = this.level + 1;
+    
+    for (let i = 0; i < sequenceLength; i++) {
+      const randomWord = this.wordPool[Math.floor(Math.random() * this.wordPool.length)];
+      this.currentSequence.push(randomWord);
+    }
+  }
+
+  showSequence() {
+    this.hideAllScreens();
+    document.getElementById('sequenceDisplay').classList.remove('hidden');
+    
+    const wordsContainer = document.getElementById('sequenceWords');
+    wordsContainer.innerHTML = '';
+    
+    this.currentSequence.forEach((word, index) => {
+      setTimeout(() => {
+        const wordElement = document.createElement('span');
+        wordElement.textContent = word;
+        wordElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full font-semibold animate-pulse';
+        wordsContainer.appendChild(wordElement);
+      }, index * 800);
+    });
+  }
+
+  showInputPhase() {
+    this.hideAllScreens();
+    document.getElementById('inputPhase').classList.remove('hidden');
+    document.getElementById('wordInput').focus();
+    this.userInput = [];
+    this.updateUserSequenceDisplay();
+  }
+
+  addWordToInput() {
+    const input = document.getElementById('wordInput');
+    const word = input.value.trim().toLowerCase();
+    
+    if (word) {
+      this.userInput.push(word);
+      input.value = '';
+      this.updateUserSequenceDisplay();
+    }
+  }
+
+  updateUserSequenceDisplay() {
+    const container = document.getElementById('userSequence');
+    container.innerHTML = '';
+    
+    this.userInput.forEach(word => {
+      const wordElement = document.createElement('span');
+      wordElement.textContent = word;
+      wordElement.className = 'bg-gray-100 text-gray-800 px-3 py-2 rounded-full font-semibold';
+      container.appendChild(wordElement);
+    });
+  }
+
+  checkSequence() {
+    if (this.userInput.length !== this.currentSequence.length) {
+      this.showFeedback('Incorrect sequence length!', 'error');
+      return;
+    }
+
+    const isCorrect = this.userInput.every((word, index) => 
+      word === this.currentSequence[index].toLowerCase()
+    );
+
+    if (isCorrect) {
+      this.score += this.level * 10;
+      this.level++;
+      this.showFeedback('Correct! Well done!', 'success');
+      setTimeout(() => this.startNewGame(), 2000);
+    } else {
+      this.lives--;
+      if (this.lives > 0) {
+        this.showFeedback(`Wrong sequence! ${this.lives} lives remaining.`, 'error');
+        setTimeout(() => this.showSequence(), 2000);
+      } else {
+        this.gameOver();
+      }
+    }
+    
+    this.updateDisplay();
+  }
+
+  showFeedback(message, type) {
+    const feedback = document.getElementById('feedback');
+    feedback.textContent = message;
+    feedback.className = `p-4 rounded-lg text-center font-semibold ${
+      type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+    }`;
+    feedback.classList.remove('hidden');
+    
+    setTimeout(() => {
+      feedback.classList.add('hidden');
+    }, 2000);
+  }
+
+  gameOver() {
+    this.hideAllScreens();
+    document.getElementById('gameOverScreen').classList.remove('hidden');
+    document.getElementById('finalScore').textContent = `Final Score: ${this.score} | Level Reached: ${this.level}`;
+  }
+
+  resetGame() {
+    this.level = 1;
+    this.score = 0;
+    this.lives = 3;
+    this.currentSequence = [];
+    this.userInput = [];
+    this.updateDisplay();
+    this.hideAllScreens();
+    document.getElementById('startScreen').classList.remove('hidden');
+  }
+
+  hideAllScreens() {
+    const screens = ['startScreen', 'sequenceDisplay', 'inputPhase', 'gameOverScreen'];
+    screens.forEach(screen => {
+      document.getElementById(screen).classList.add('hidden');
+    });
+  }
+
+  updateDisplay() {
+    document.getElementById('level').textContent = this.level;
+    document.getElementById('score').textContent = this.score;
+    document.getElementById('lives').textContent = this.lives;
+  }
+}
+
+// Initialize game when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  new MemoryGame();
+});
+</script>
+
+</body>
+</html>
