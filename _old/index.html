@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeuraFlex TBI Memory</title>
+<title>NeuraFlex</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
 <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
-<h1 class="text-3xl font-bold mb-6 text-center text-gray-800">NeuraFlex TBI Memory</h1>
+<h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Memory Game</h1>
 
 <!-- Game Stats -->
 <div class="flex justify-between mb-6 text-sm text-gray-600">
@@ -35,7 +35,7 @@
   <div id="inputPhase" class="hidden space-y-4">
     <h3 class="text-lg font-semibold mb-3 text-center">Enter the sequence:</h3>
     <div id="inputArea">
-      <input type="text" id="wordInput" placeholder="Enter the words in order..."
+      <input type="text" id="wordInput" placeholder="Enter the words in order with sapces in between"
         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4">
       <button id="submitSequence"
         class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors">
@@ -47,7 +47,7 @@
 
   <!-- Start/Results Screen -->
   <div id="startScreen" class="text-center space-y-4">
-    <p class="text-gray-600 mb-4">Test your memory! Remember sequences of words and repeat them back.</p>
+    <p class="text-gray-600 mb-4">Test your memory! <br>Remember sequences of words and repeat them back.</p>
     <button id="startGame" class="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg">
       Start Game
     </button>
@@ -76,7 +76,7 @@ class MemoryGame {
     this.lives = 3;
     this.currentSequence = [];
     this.userInput = [];
-    this.wordPool = ['apple', 'beach', 'chair', 'dance', 'eagle', 'flame', 'grape', 'house', 'island', 'juice', 'kite', 'light', 'music', 'night', 'ocean', 'peace', 'quiet', 'river', 'smile', 'table', 'unity', 'voice', 'water', 'youth', 'zebra'];
+    this.wordPool = ['cat', 'dog', 'tree', 'house', 'car', 'book', 'sun', 'moon', 'star', 'fish', 'bird', 'flower', 'water', 'fire', 'rock', 'wind', 'cloud', 'rain', 'snow', 'leaf'];
     
     this.init();
   }
@@ -133,7 +133,7 @@ class MemoryGame {
         wordElement.textContent = word;
         wordElement.className = 'bg-blue-100 text-blue-800 px-3 py-2 rounded-full font-semibold animate-pulse';
         wordsContainer.appendChild(wordElement);
-      }, index * 1000);
+      }, index * 800);
     });
   }
 
@@ -170,7 +170,7 @@ class MemoryGame {
 
   checkSequence() {
     if (this.userInput.length !== this.currentSequence.length) {
-      this.showFeedback('Please enter all words in the sequence!', 'error');
+      this.showFeedback('Incorrect sequence length!', 'error');
       return;
     }
 
@@ -181,12 +181,12 @@ class MemoryGame {
     if (isCorrect) {
       this.score += this.level * 10;
       this.level++;
-      this.showFeedback('🎉 Excellent! Level up!', 'success');
+      this.showFeedback('Correct! Well done!', 'success');
       setTimeout(() => this.startNewGame(), 2000);
     } else {
       this.lives--;
       if (this.lives > 0) {
-        this.showFeedback(`❌ Try again! ${this.lives} lives remaining.`, 'error');
+        this.showFeedback(`Wrong sequence! ${this.lives} lives remaining.`, 'error');
         setTimeout(() => this.showSequence(), 2000);
       } else {
         this.gameOver();
